@@ -5,10 +5,33 @@ spring:
   application:
     name: product-service
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ecommerce_db
+    username: postgres
+    password: admin@123
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  elasticsearch:
+    uris: http://localhost:9200
+    username: elastic
+    password: RcpUSCd-MW100-aHyzfd
+
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
 
 resilience4j:
   circuitbreaker:
@@ -19,3 +42,12 @@ resilience4j:
         minimumNumberOfCalls: 3
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
