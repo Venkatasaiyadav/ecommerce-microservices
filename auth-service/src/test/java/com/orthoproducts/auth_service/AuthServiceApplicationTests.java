@@ -1,10 +1,10 @@
-package com.orthoproducts.service_registry;
+package com.orthoproducts.auth_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
-class ServiceRegistryApplicationTests {
+@SpringBootTest
+class AuthServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

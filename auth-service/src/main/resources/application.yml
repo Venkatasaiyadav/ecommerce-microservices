@@ -1,0 +1,73 @@
+# src/main/resources/application.yml
+
+server:
+  port: 8083
+  error:
+    include-message: never       # Never expose raw error messages in production
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+spring:
+  application:
+    name: auth-service
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/auth_db}
+      auto-index-creation: false   # We manage indexes programmatically via @Indexed
+        # Architectural Decision: Disable auto-index to have
+        # full control over index creation timing and options.
+        # @Indexed + MongoAutoIndexCreation bean gives us
+      # explicit control without surprise index creation.
+
+  # Disable Spring Boot's default Jackson date serialization
+  # so our @JsonFormat annotations take precedence
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+    health-check-url-path: /actuator/health
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+# JWT Configuration
+# Architectural Decision: All JWT config is externalized.
+# In production, jwt.secret should come from a secrets manager
+# (AWS Secrets Manager, Vault, etc.) - never hardcoded.
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  # Secret must be >= 256 bits for HS256. This default is 64 hex chars = 256 bits.
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}       # 15 minutes in ms
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}  # 7 days in ms
+  issuer: ${JWT_ISSUER:ecommerce-auth-service}
+
+# Actuator - expose only health and info for service discovery
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging
+logging:
+  level:
+    com.ecommerce.auth: INFO
+    org.springframework.security: WARN    # Reduce security noise in production
+    org.springframework.data.mongodb: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

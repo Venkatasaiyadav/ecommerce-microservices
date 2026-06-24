@@ -4,7 +4,6 @@
     import com.orthoproducts.product_service.model.ProductDocument;
     import com.orthoproducts.product_service.repo.ProductRepository;
     import com.orthoproducts.product_service.repo.ProductSearchRepository;
-    import org.springframework.data.elasticsearch.client.elc.QueryBuilders;
     import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
     import org.springframework.data.elasticsearch.core.query.Query;
     import org.springframework.data.elasticsearch.core.query.Query;
